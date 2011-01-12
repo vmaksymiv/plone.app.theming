@@ -1,0 +1,14 @@
+<configure
+  xmlns="http://namespaces.zope.org/zope"
+  xmlns:gs="http://namespaces.zope.org/genericsetup"
+  i18n_domain="collective.gallery">
+        
+  <gs:upgradeStep
+    title="Upgrade p.a.theming 1.0a1-1002"
+    description="upgrade step"
+    source="1.0a1"
+    destination="1002"
+    handler=".upgrades.upgrade_10a1_to_1002"
+    profile="plone.app.theming:default"/>
+
+</configure>

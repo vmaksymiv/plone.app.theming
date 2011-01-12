@@ -16,5 +16,10 @@
         template="controlpanel.pt"
         permission="cmf.ManagePortal"
         />
-
+    <browser:page
+        name="domaintotheme-controlpanel"
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        permission="cmf.ManagePortal"
+        class=".domainToTheme.DomainsToThemeControlPanelView"
+        />
 </configure>

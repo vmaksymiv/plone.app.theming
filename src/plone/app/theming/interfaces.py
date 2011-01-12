@@ -1,6 +1,7 @@
-from zope.interface import Interface
+from zope import interface
 from zope import schema
 from zope.i18nmessageid import MessageFactory
+from zope.schema.interfaces import ITextLine
 
 _ = MessageFactory(u"plone")
 
@@ -8,7 +9,7 @@ THEME_RESOURCE_NAME = 'theme'
 RULE_FILENAME = 'rules.xml'
 MANIFEST_FILENAME = 'manifest.cfg'
 
-class IThemeSettings(Interface):
+class IThemeSettings(interface.Interface):
     """Transformation settings
     """
     
@@ -47,6 +48,18 @@ class IThemeSettings(Interface):
             default=False,
         )
 
-class IThemingLayer(Interface):
+class IDomainToTheme(interface.Interface):
+
+    domainsToTheme = schema.List(
+            title=_('label_domainsToTheme',
+                    default=u'Domains to theme'),
+            description=_('help_domainsToTheme',
+                          default=u"Add domains whith theme id."),
+            value_type=schema.TextLine(
+                title=_('Domain to theme'),
+            )
+        )
+
+class IThemingLayer(interface.Interface):
     """Browser layer used to indicate that plone.app.theming is installed
     """

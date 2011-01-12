@@ -14,7 +14,8 @@ from zope.site.hooks import getSite
 from plone.registry.interfaces import IRegistry
 from plone.transformchain.interfaces import ITransform
 
-from plone.app.theming.interfaces import IThemeSettings, IThemingLayer
+from plone.app.theming.interfaces import IThemeSettings, IThemingLayer,\
+    IDomainToTheme
 from plone.app.theming.utils import expandAbsolutePrefix, PythonResolver, InternalResolver, NetworkResolver
 
 LOGGER = logging.getLogger('plone.app.theming')
@@ -86,19 +87,8 @@ class ThemeTransform(object):
         
         # Obtain settings. Do nothing if not found
         
-        registry = queryUtility(IRegistry)
-        if registry is None:
-            return None
-        
-        try:
-            settings = registry.forInterface(IThemeSettings)
-        except KeyError:
-            return None
-        
+        settings = self.getSettings()
         if settings is None:
-            return None
-        
-        if not settings.enabled:
             return None
         
         rules = settings.rules
@@ -221,3 +211,55 @@ class ThemeTransform(object):
         result.tree = transformed
         
         return result
+
+    def getSettings(self):
+        return IThemeSettings(self.request)
+
+class ThemeSettings(object):
+    implements(IThemeSettings)
+    adapts(IThemingLayer)
+
+    def __init__(self, request):
+        self.request = request
+        base1 = request.get('BASE1')
+        _, base1 = base1.split('://', 1)
+        host = base1.lower()
+        self.host = host
+        self.registry = queryUtility(IRegistry)
+        try:
+            self.default = self.registry.forInterface(IThemeSettings)
+            registry = self.registry.forInterface(IDomainToTheme)
+            domainsToTheme = registry.domainsToTheme
+            self.themes = {}
+            for d in domainsToTheme:
+                domain, theme = d.split('|')
+                self.themes[domain.strip()] = theme.strip()
+        except KeyError:
+            pass
+        #needed for cache
+        self.__registry__ = None
+        if self.default is not None:
+            self.__registry__ = self.default.__registry__
+
+    @property
+    def enabled(self):
+        if self.default is None:return False
+        return self.default.enabled
+
+    @property
+    def rules(self):
+        if self.default is None:return u""
+        if self.themes:
+            if self.host in self.themes.keys():
+                theme = self.themes.get(self.host)
+        return self.default.rules
+
+    @property
+    def absolutePrefix(self):
+        if self.default is None:return u""
+        return self.default.absolutePrefix
+
+    @property
+    def readNetwork(self):
+        if self.default is None:return u""
+        return self.default.readNetwork
