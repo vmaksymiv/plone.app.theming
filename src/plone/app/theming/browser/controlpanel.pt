@@ -37,7 +37,11 @@
                 with Plone. Use the <em>Advanced</em> tab to configure a
                 theme manually.
             </p>
-            
+            <p i18n:translate="description_domain_to_theme">
+              You can select a theme per domain. To configure this feature go
+              to <a i18n:name="domaintotheme_controlpanel" href="" title="Configure domain to theme settings" tal:attributes="href string:${context/absolute_url}/@@domaintotheme-controlpanel">
+              this controlpanel</a>.
+            </p>
             <form
                 name="basic"
                 method="post" 

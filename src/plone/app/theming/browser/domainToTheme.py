@@ -9,3 +9,5 @@ class DomainsToThemeControlPanelForm(RegistryEditForm):
 
 DomainsToThemeControlPanelView = layout.wrap_form(DomainsToThemeControlPanelForm,
                                                  ControlPanelFormWrapper)
+
+DomainsToThemeControlPanelView.label = u"Map domains to theme"
