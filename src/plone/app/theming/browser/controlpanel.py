@@ -10,8 +10,12 @@ from plone.registry.interfaces import IRegistry
 from plone.resource.interfaces import IResourceDirectory
 from plone.resource.utils import iterDirectoriesOfType
 
+from plone.z3cform import layout
+
+from plone.app.registry.browser.controlpanel import RegistryEditForm
+from plone.app.registry.browser.controlpanel import ControlPanelFormWrapper
 from plone.app.theming.interfaces import _
-from plone.app.theming.interfaces import IThemeSettings
+from plone.app.theming.interfaces import IThemeSettings, IDomainToTheme
 from plone.app.theming.interfaces import RULE_FILENAME, MANIFEST_FILENAME, THEME_RESOURCE_NAME
 
 from plone.app.theming.utils import getOrCreatePersistentResourceDirectory
@@ -271,3 +275,12 @@ class ThemingControlpanel(BrowserView):
         IStatusMessage(self.request).add(message)
         portalUrl = getToolByName(self.context, 'portal_url')()
         self.request.response.redirect("%s/plone_control_panel" % portalUrl)
+
+
+class DomainsToThemeControlPanelForm(RegistryEditForm):
+    schema = IDomainToTheme
+
+DomainsToThemeControlPanelView = layout.wrap_form(DomainsToThemeControlPanelForm,
+                                                 ControlPanelFormWrapper)
+
+DomainsToThemeControlPanelView.label = u"Map domains to theme"

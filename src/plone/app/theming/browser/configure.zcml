@@ -20,6 +20,7 @@
         name="domaintotheme-controlpanel"
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"
         permission="cmf.ManagePortal"
-        class=".domainToTheme.DomainsToThemeControlPanelView"
+        class=".controlpanel.DomainsToThemeControlPanelView"
         />
+
 </configure>
