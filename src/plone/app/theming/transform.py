@@ -63,7 +63,7 @@ class ThemeTransform(object):
     def __init__(self, published, request):
         self.published = published
         self.request = request
-    
+
     def setupTransform(self):
         request = self.request
         DevelopmentMode = Globals.DevelopmentMode
@@ -90,7 +90,7 @@ class ThemeTransform(object):
         settings = self.getSettings()
         if settings is None:
             return None
-        
+
         rules = settings.rules
         if not rules:
             return None
@@ -222,18 +222,20 @@ class ThemeSettings(object):
     def __init__(self, request):
         self.request = request
         base1 = request.get('BASE1')
-        _, base1 = base1.split('://', 1)
         host = base1.lower()
-        self.host = host
+        self.host = unicode(host)
         self.registry = queryUtility(IRegistry)
+        self.themes = {}
+        self.default = None
         try:
             self.default = self.registry.forInterface(IThemeSettings)
             registry = self.registry.forInterface(IDomainToTheme)
             domainsToTheme = registry.domainsToTheme
-            self.themes = {}
-            for d in domainsToTheme:
-                domain, theme = d.split('|')
-                self.themes[domain.strip()] = theme.strip()
+            if domainsToTheme:
+                for d in domainsToTheme:
+                    domain, theme = d.split('|')
+                    domain, theme = domain.strip(), theme.strip()
+                    self.themes[domain] = self.getThemeSettings(name=theme)
         except KeyError:
             pass
         #needed for cache
@@ -243,23 +245,34 @@ class ThemeSettings(object):
 
     @property
     def enabled(self):
-        if self.default is None:return False
-        return self.default.enabled
+        settings = self.getThemeSettings()
+        if settings is None:return False
+        return settings.enabled
 
     @property
     def rules(self):
-        if self.default is None:return u""
-        if self.themes:
-            if self.host in self.themes.keys():
-                theme = self.themes.get(self.host)
-        return self.default.rules
+        settings = self.getThemeSettings()
+        if settings is None:return u""
+        return settings.rules
 
     @property
     def absolutePrefix(self):
-        if self.default is None:return u""
-        return self.default.absolutePrefix
+        settings = self.getThemeSettings()
+        if settings is None:return u""
+        return settings.absolutePrefix
 
     @property
     def readNetwork(self):
-        if self.default is None:return u""
-        return self.default.readNetwork
+        settings = self.getThemeSettings()
+        if settings is None:return False
+        return settings.readNetwork
+
+    def getThemeSettings(self, name=None):
+        """Return IThemeSettings object by theme name
+        """
+        if name is not None:
+            return queryUtility(IThemeSettings, name, None)
+        if self.host in self.themes.keys():
+            return self.themes.get(self.host)
+        return self.default
+
