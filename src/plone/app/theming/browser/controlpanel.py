@@ -28,7 +28,7 @@ from plone.app.theming.utils import createThemeFromTemplate
 from plone.app.theming.plugins.utils import getPluginSettings
 from plone.app.theming.plugins.utils import getPlugins
 
-from plone.app.controlpanel.skins import ISkinsSchema
+from plone.app.controlpanel.interfaces import ISkinsSchema
 
 from AccessControl import Unauthorized
 from Products.CMFCore.utils import getToolByName
