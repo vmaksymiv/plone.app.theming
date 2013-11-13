@@ -58,7 +58,7 @@ class ThemingControlpanel(BrowserView):
         self.selectedTheme = self.getSelectedTheme(self.availableThemes, self.settings.rules)
         self.overlay = ''
 
-        self.skinsSettings = ISkinsSchema(self.context)
+        self.skinsSettings = getUtility(IRegistry).forInterface(ISkinsSchema, False)
         self.skinsVocabulary = getUtility(IVocabularyFactory, name='plone.app.vocabularies.Skins')(self.context)
 
         # Set response header to make sure control panel is never themed
