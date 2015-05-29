@@ -23,6 +23,7 @@ from plone.resource.manifest import MANIFEST_FILENAME
 from plone.resource.manifest import extractManifestFromZipFile
 from plone.resource.manifest import getManifest
 from plone.resource.manifest import getZODBResources
+from plone.resource.manifest import getAllResources
 from plone.resource.utils import cloneResourceDirectory
 from plone.resource.utils import iterDirectoriesOfType
 from plone.resource.utils import queryResourceDirectory
@@ -272,10 +273,9 @@ def getTheme(name, manifest=None, resources=None):
                 MANIFEST_FORMAT,
                 filter=isValidThemeDirectory
             )
-            manifest = filter(lambda x: x['name'] == name, resources)[0]
-
-            if manifest is None:
-                manifest = {}
+        if name not in resources:
+            return None
+        manifest = resources[name] or {}
 
     title = manifest.get('title', None)
     if title is None:
@@ -331,7 +331,7 @@ def getTheme(name, manifest=None, resources=None):
 def getAvailableThemes():
     """Get a list of all ITheme's available in resource directories.
     """
-    resources = getAllResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
+    resources = getThemeResources(MANIFEST_FORMAT, filter=isValidThemeDirectory)
     themes = []
     for theme in resources:
         themes.append(getTheme(theme['name'], theme))
@@ -339,7 +339,7 @@ def getAvailableThemes():
     themes.sort(key=lambda x: safe_unicode(x.title))
     return themes
 
-def getAllResources(format, defaults=None, filter=None, manifestFilename=MANIFEST_FILENAME):
+def getThemeResources(format, defaults=None, filter=None, manifestFilename=MANIFEST_FILENAME):
 
     resources = []
 
